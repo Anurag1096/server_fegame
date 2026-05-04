@@ -1,6 +1,8 @@
-import { Controller,Get,Req,Res,Post } from "@nestjs/common";
+import { Controller,Get,Req,Res,Post, Body } from "@nestjs/common";
 import { UserService } from "./user.service";
+
 //need to use dto when passing data to the service from request object
+import { UserDto } from "./dto/user.dto";
 @Controller()
 export class UserController{
     constructor(private readonly userService:UserService){}
@@ -12,9 +14,9 @@ export class UserController{
 
 
     @Post("/user")
-    saveUser(@Req() req:Request){
-        console.log(req)
-        return this.userService.createUser()
+    saveUser(@Body() userDto:UserDto){
+        
+        return this.userService.createUser(userDto)
     }
 
 }
