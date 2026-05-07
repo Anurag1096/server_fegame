@@ -1,4 +1,4 @@
-
+// They map the request objects.
 import { IsString,IsEmail,IsNumber,IsNotEmpty,MinLength ,IsDate} from "class-validator"
 export class UserDto{
 
