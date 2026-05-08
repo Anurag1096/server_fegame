@@ -15,6 +15,6 @@ export class UserService{
 
     async findOne(findOne:FindOneDto):Promise<User|null>{
         // this will call the userRepo(this handles the db call's for the user api)
-        return {username:"Anurag", id:231, password:"anurag233"}
+        return {username:"Anurag", id:231, password:"anurag233",email:'asdd@gmail.com'}
     }
 }
