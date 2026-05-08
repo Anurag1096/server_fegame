@@ -11,7 +11,7 @@ async signIn(userName:string, pass:string){
     if(user?.password !== pass){
         throw new UnauthorizedException();
     }
-    const {password, ...result}=users
+    const {password, ...result}=user
     // genrate a jwt and return it.
     return result
 }
