@@ -11,7 +11,7 @@ export class AuthController {
     @HttpCode(HttpStatus.OK)
     @Post("signup")
     signUp(@Body() signUpDto:Record<string,any>){
-        return this.authService.signUp(signUpDto.userName,signUpDto.password,signUpDto.email)
+        return this.authService.signUp(signUpDto.username,signUpDto.password,signUpDto.email)
     }
 
     @HttpCode(HttpStatus.OK)

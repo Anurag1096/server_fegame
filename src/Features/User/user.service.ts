@@ -11,9 +11,9 @@ export class UserService {
     getUser() {
         return "THE DATA LIST OF USER IN JSON FORMAT";
     }
-    async createUser(userDto: UserDto) {
-        console.log(userDto)
-        return { message: "User saved to the database", data: userDto }
+    async createUser({username,password,email}: UserDto) {
+        console.log()
+        return { message: "User saved to the database" }
     }
 
     async findOne({ username }: FindOneDto) {
@@ -29,9 +29,4 @@ export class UserService {
 
     }
 
-
-    async savetoDb({userName:string,password:string,email:string}){
-         //use hashing on password and then save to the database
-         return {accessToken:'lskajfiowr'}
-    }
 }
