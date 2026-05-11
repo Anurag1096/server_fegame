@@ -9,7 +9,21 @@ constructor(private readonly userService:UserService,
     private readonly jwtService:JwtService
 ){}
 
-async signUp(){}
+async signUp( userName:string,email:string,password:string):Promise<{accessToken: string}|{message:string}>{
+    //pre condition 
+    // invariant
+    // post condition 
+    //first look if the user is there in the database 
+    //if present throw error user already there
+    // if the query returend is false then save the user in the database 
+    // and generate the required access token 
+    const user= await this.userService.findOne({username:userName})
+    if(!user){
+        // crete user by calling saveto db and then return access token form it
+     return this.userService.savetoDb({userName,password,email})
+    }
+    return {message:"the user is already there"}
+}
 
 async signIn(userName:string, pass:string):Promise<{accessToken:string}>{
    // will use findone service from userService

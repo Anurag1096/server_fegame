@@ -6,9 +6,13 @@ import { userInfo } from 'os';
 @Controller('auth')
 export class AuthController {
 
-
+    
     constructor(private readonly authService:AuthService){}
-
+    @HttpCode(HttpStatus.OK)
+    @Post("signup")
+    signUp(@Body() signUpDto:Record<string,any>){
+        return this.authService.signUp(signUpDto.userName,signUpDto.password,signUpDto.email)
+    }
 
     @HttpCode(HttpStatus.OK)
     @Post("login")

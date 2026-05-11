@@ -28,4 +28,10 @@ export class UserService {
 
 
     }
+
+
+    async savetoDb({userName:string,password:string,email:string}){
+         //use hashing on password and then save to the database
+         return {accessToken:'lskajfiowr'}
+    }
 }
