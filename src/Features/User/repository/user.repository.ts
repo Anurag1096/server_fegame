@@ -7,8 +7,17 @@ import { UserDto } from "../dto/user.dto";
 export class UserReopsitory {
     constructor(private prisma: PrismaService) { }
 
-    async creteUser(user: UserDto): Promise<User | null> {
-        return null
+    async createUserRepo(userDto: UserDto): Promise<User | null> {
+       
+            const createdUser=await this.prisma.user.create({
+                data:{
+                    username:userDto.username,
+                    password:userDto.password,
+                    email:userDto.email
+                }
+            })
+      if(!createdUser) return null
+      return createdUser
     }
     async findByUserName(username: string): Promise<User | null> {
         try {
