@@ -1,8 +1,9 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { UserService } from 'src/Features/User/user.service';
 import { UserEntity as User} from 'src/Features/User/entity/user.entity';
 import { JwtService } from '@nestjs/jwt';
 import { UserDto } from 'src/Features/User/dto/user.dto';
+import { hashPassword } from 'src/utils/hash';
 
 @Injectable()
 export class AuthService {
@@ -21,8 +22,11 @@ async signUp( username:string,email:string,password:string):Promise<{accessToken
     const user= await this.userService.findOne({username})
     if(!user){
         // crete user by calling saveto db and then return access token form it
-
-     return this.userService.createUser({username,password,email})
+        const { hashedPassword}= await hashPassword(password)
+        if(!hashedPassword) throw new InternalServerErrorException("hashing failed")
+     const newUser=await this.userService.createUser({username,password: hashedPassword,email})
+     // now we just hash it and return it.
+     
     }
     return {message:"the user is already there"}
 }

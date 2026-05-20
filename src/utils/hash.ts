@@ -3,7 +3,7 @@ export async function hashPassword(password: string): Promise<{ hashedPassword?:
 //need to figure out the error type
     try {
         const hashedPassword = await argon2.hash(password)
-        return { hashedPassword, }
+        return { hashedPassword }
     } catch (error) {
         console.error("Error in hashing password",error)
         return { hashedPassword: null }
