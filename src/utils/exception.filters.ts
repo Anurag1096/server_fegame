@@ -1,5 +1,6 @@
 import { ExceptionFilter, Catch, ArgumentsHost, HttpException, } from "@nestjs/common";
 import { Response, Request } from "express";
+import { Prisma } from "generated/prisma/client";
 
 
 
@@ -10,7 +11,10 @@ export class HttpExceptionfilter implements ExceptionFilter {
         const ctx = host.switchToHttp();
         const response = ctx.getResponse<Response>();
         const request = ctx.getRequest<Request>();
+        //This is for the normal exception
         const status = exception.getStatus();
+        const message:string| object =exception.getResponse();
+
 
         response.status(status).json(
 
@@ -18,6 +22,7 @@ export class HttpExceptionfilter implements ExceptionFilter {
                 statusCode: status,
                 timestamp: new Date().toISOString(),
                 path: request.url,
+                message:message,
             }
         )
     }
