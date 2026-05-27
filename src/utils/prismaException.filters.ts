@@ -1,12 +1,11 @@
 import { ExceptionFilter,Catch,ArgumentsHost,Logger } from "@nestjs/common";
-import { timeStamp } from "console";
 import { Response ,Request} from "express";
 import { Prisma } from "generated/prisma/client";
 
 
 
 @Catch()
-export class PrismaExceptionFilter extends ExceptionFilter{
+export class PrismaExceptionFilter implements ExceptionFilter{
     private readonly logger=new Logger()
     catch(exception:any, host:ArgumentsHost){
         const ctx=host.switchToHttp();
