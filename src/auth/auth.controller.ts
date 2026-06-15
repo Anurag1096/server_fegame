@@ -1,22 +1,27 @@
-import { Controller, HttpCode, HttpStatus, Post,Body } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
-import { ok } from 'assert';
-import { userInfo } from 'os';
+import { SignInDto } from './dto/signin.dto';
+import { SignUpDto } from './dto/signup.dto';
 
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
+    constructor(private readonly authService: AuthService) {}
 
-    
-    constructor(private readonly authService:AuthService){}
     @HttpCode(HttpStatus.OK)
-    @Post("signup")
-    signUp(@Body() signUpDto:Record<string,any>){
-        return this.authService.signUp(signUpDto.username,signUpDto.password,signUpDto.email)
+    @Post('signup')
+    signUp(@Body() signUpDto: SignUpDto) {
+        return this.authService.signUp(
+            signUpDto.username,
+            signUpDto.email,
+            signUpDto.password,
+        );
     }
 
     @HttpCode(HttpStatus.OK)
-    @Post("login")
-    signIn(@Body() signInDto: Record<string,any>){
-   return this.authService.signIn(signInDto.userName,signInDto.password)
+    @Post('login')
+    signIn(@Body() signInDto: SignInDto) {
+        return this.authService.signIn(signInDto.userName, signInDto.password);
     }
 }

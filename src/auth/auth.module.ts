@@ -1,23 +1,24 @@
 import { Module } from '@nestjs/common';
-import { AuthController } from './auth.controller';
-import { UserModule } from 'src/Features/User/user.module';
-import { AuthService } from './auth.service';
-import { UserService } from 'src/Features/User/user.service';
 import { JwtModule } from '@nestjs/jwt';
-import { UserReopsitory } from 'src/Features/User/repository/user.repository';
-import { PrismaService } from 'prisma/prisam.service';
-const secret= process.env.JWT_SECRET
-@Module({
-  imports:[UserModule,
+import { UserModule } from 'src/Features/User/user.module';
+import { AuthController } from './auth.controller';
+import { AuthService } from './auth.service';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { WsJwtGuard } from './guards/ws-jwt.guard';
 
-    JwtModule.register({
-      global:true,
-      secret:secret,
-      signOptions:{ expiresIn:'100s'}
-    }),
-  ],
-  controllers: [AuthController],
-  providers: [AuthService,UserService,UserReopsitory,PrismaService],
-  exports:[AuthService]
+const secret = process.env.JWT_SECRET;
+
+@Module({
+    imports: [
+        UserModule,
+        JwtModule.register({
+            global: true,
+            secret,
+            signOptions: { expiresIn: '24h' },
+        }),
+    ],
+    controllers: [AuthController],
+    providers: [AuthService, JwtAuthGuard, WsJwtGuard],
+    exports: [AuthService, JwtAuthGuard, WsJwtGuard],
 })
 export class AuthModule {}

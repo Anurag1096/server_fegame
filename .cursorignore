@@ -1,0 +1,36 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+coverage/
+
+# Generated code
+generated/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Logs and temp files
+*.log
+logs/
+.temp/
+.tmp/
+
+# OS and IDE
+.DS_Store
+.idea/
+.vscode/
+
+# Database local data
+postgres_data/
+*.db
+*.db-journal
+
+# Lock files (large, low signal for AI)
+pnpm-lock.yaml
+package-lock.json
+yarn.lock

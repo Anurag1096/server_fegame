@@ -1,6 +1,18 @@
 import * as argon2 from "argon2";
 
 import { Injectable } from "@nestjs/common";
+
+export async function verifyPassword(
+    hashedPassword: string,
+    plainPassword: string,
+): Promise<boolean> {
+    try {
+        return await argon2.verify(hashedPassword, plainPassword);
+    } catch {
+        return false;
+    }
+}
+
 export async function hashPassword(password: string): Promise<{ hashedPassword?: string | null }> {
     //need to figure out the error type
     try {

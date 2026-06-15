@@ -12,11 +12,11 @@ export class UserService {
         return "THE DATA LIST OF USER IN JSON FORMAT";
     }
     async createUser(user: UserDto) {
-        // it job to get the data and call the repo with the required encryption of the password
-        
-        const userCreated= await this.userRepo.createUserRepo(user)
-        
-        return { message: "User saved to the database" }
+        const userCreated = await this.userRepo.createUserRepo(user);
+        if (!userCreated) {
+            throw new Error('Failed to create user');
+        }
+        return userCreated;
     }
 
     async findOne({ username }: FindOneDto) {
