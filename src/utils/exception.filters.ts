@@ -19,14 +19,21 @@ export class HttpExceptionfilter implements ExceptionFilter {
         const request = ctx.getRequest<Request>();
 
         if (exception instanceof Prisma.PrismaClientKnownRequestError) {
-            const status =
-                exception.code === 'P2002'
-                    ? HttpStatus.CONFLICT
-                    : HttpStatus.BAD_REQUEST;
-            const message =
-                exception.code === 'P2002'
-                    ? 'Record already exists'
-                    : 'Database error';
+            let status = HttpStatus.BAD_REQUEST;
+            let message = 'Database error';
+
+            if (exception.code === 'P2002') {
+                status = HttpStatus.CONFLICT;
+                message = 'Record already exists';
+            } else if (exception.code === 'P1003') {
+                status = HttpStatus.SERVICE_UNAVAILABLE;
+                message =
+                    'Database does not exist. Check DATABASE_URL and run prisma migrate dev.';
+            } else if (exception.code === 'P2021') {
+                status = HttpStatus.SERVICE_UNAVAILABLE;
+                message =
+                    'Database table missing. Run prisma migrate dev.';
+            }
 
             response.status(status).json({
                 statusCode: status,
