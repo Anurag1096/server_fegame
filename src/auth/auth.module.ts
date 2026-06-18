@@ -5,6 +5,7 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { WsJwtGuard } from './guards/ws-jwt.guard';
+import { RefreshTokenRepository } from './repository/refresh-token.repository';
 
 const secret = process.env.JWT_SECRET;
 
@@ -14,11 +15,11 @@ const secret = process.env.JWT_SECRET;
         JwtModule.register({
             global: true,
             secret,
-            signOptions: { expiresIn: '24h' },
+            signOptions: { expiresIn: '15m' },
         }),
     ],
     controllers: [AuthController],
-    providers: [AuthService, JwtAuthGuard, WsJwtGuard],
+    providers: [AuthService, RefreshTokenRepository, JwtAuthGuard, WsJwtGuard],
     exports: [AuthService, JwtAuthGuard, WsJwtGuard],
 })
 export class AuthModule {}

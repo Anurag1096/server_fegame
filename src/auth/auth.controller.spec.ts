@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 describe('AuthController', () => {
     let controller: AuthController;
@@ -14,10 +15,16 @@ describe('AuthController', () => {
                     useValue: {
                         signUp: jest.fn(),
                         signIn: jest.fn(),
+                        refreshSession: jest.fn(),
+                        revokeRefreshToken: jest.fn(),
+                        profileFromPayload: jest.fn(),
                     },
                 },
             ],
-        }).compile();
+        })
+            .overrideGuard(JwtAuthGuard)
+            .useValue({ canActivate: jest.fn(() => true) })
+            .compile();
 
         controller = module.get<AuthController>(AuthController);
     });

@@ -28,6 +28,7 @@ import { MatchmakingService } from './services/matchmaking.service';
 import { GameError, RoomService } from './services/room.service';
 import { ClientEvents, ServerEvents } from './types/events.enum';
 import { GameStatus, toRoomSnapshot } from './types/game.types';
+import { getSocketCorsOptions } from 'src/config/cors.config';
 
 interface SocketUser {
     userId: number;
@@ -36,7 +37,7 @@ interface SocketUser {
 
 @WebSocketGateway({
     namespace: '/game',
-    cors: { origin: '*' },
+    cors: getSocketCorsOptions(),
 })
 @UseGuards(WsJwtGuard)
 @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))

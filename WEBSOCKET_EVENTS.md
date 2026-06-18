@@ -1,13 +1,21 @@
 # WebSocket Events (Tic Tac Toe)
 
-Connect to the game namespace after obtaining a JWT from `POST /auth/login` or `POST /auth/signup`.
+Connect to the game namespace after signing in via `POST /auth/login` or `POST /auth/signup` (sets an httpOnly cookie).
 
 - **URL:** `ws://localhost:3004/game`
-- **Auth:** pass the token in the Socket.IO handshake:
+- **Auth:** send credentials so the browser includes the `accessToken` cookie:
 
 ```javascript
 import { io } from 'socket.io-client';
 
+const socket = io('http://localhost:3004/game', {
+  withCredentials: true,
+});
+```
+
+Legacy handshake auth is still supported for tools/tests:
+
+```javascript
 const socket = io('http://localhost:3004/game', {
   auth: { token: accessToken },
 });

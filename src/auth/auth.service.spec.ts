@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { JwtService } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
 import { UserService } from 'src/Features/User/user.service';
+import { RefreshTokenRepository } from './repository/refresh-token.repository';
 
 describe('AuthService', () => {
     let service: AuthService;
@@ -21,6 +22,15 @@ describe('AuthService', () => {
                     provide: JwtService,
                     useValue: {
                         signAsync: jest.fn().mockResolvedValue('token'),
+                    },
+                },
+                {
+                    provide: RefreshTokenRepository,
+                    useValue: {
+                        create: jest.fn(),
+                        findValidByHash: jest.fn(),
+                        revokeById: jest.fn(),
+                        revokeByHash: jest.fn(),
                     },
                 },
             ],

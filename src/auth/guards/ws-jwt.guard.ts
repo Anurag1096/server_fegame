@@ -2,6 +2,7 @@ import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { WsException } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
+import { extractTokenFromCookieHeader } from '../constants/auth-cookie.constants';
 import { JwtPayload } from './jwt-auth.guard';
 
 @Injectable()
@@ -30,6 +31,14 @@ export class WsJwtGuard implements CanActivate {
     }
 
     private extractToken(client: Socket): string | undefined {
+        const cookieHeader = client.handshake.headers.cookie;
+        const cookieToken = extractTokenFromCookieHeader(
+            typeof cookieHeader === 'string' ? cookieHeader : undefined,
+        );
+        if (cookieToken) {
+            return cookieToken;
+        }
+
         const authToken = client.handshake.auth?.token;
         if (typeof authToken === 'string' && authToken.length > 0) {
             return authToken;

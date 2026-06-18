@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
+import { AUTH_COOKIE_NAME } from '../constants/auth-cookie.constants';
 
 export interface JwtPayload {
     sub: number;
@@ -34,6 +35,11 @@ export class JwtAuthGuard implements CanActivate {
     }
 
     private extractToken(request: Request): string | undefined {
+        const cookieToken = request.cookies?.[AUTH_COOKIE_NAME];
+        if (typeof cookieToken === 'string' && cookieToken.length > 0) {
+            return cookieToken;
+        }
+
         const [type, token] = request.headers.authorization?.split(' ') ?? [];
         return type === 'Bearer' ? token : undefined;
     }
