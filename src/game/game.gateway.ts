@@ -15,6 +15,7 @@ import {
 } from '@nestjs/websockets';
 import { JwtService } from '@nestjs/jwt';
 import { Server, Socket } from 'socket.io';
+import { extractTokenFromCookieHeader } from 'src/auth/constants/auth-cookie.constants';
 import { WsJwtGuard } from 'src/auth/guards/ws-jwt.guard';
 import { JwtPayload } from 'src/auth/guards/jwt-auth.guard';
 import {
@@ -306,6 +307,14 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
 
     private extractToken(client: Socket): string | undefined {
+        const cookieHeader = client.handshake.headers.cookie;
+        const cookieToken = extractTokenFromCookieHeader(
+            typeof cookieHeader === 'string' ? cookieHeader : undefined,
+        );
+        if (cookieToken) {
+            return cookieToken;
+        }
+
         const authToken = client.handshake.auth?.token;
         if (typeof authToken === 'string' && authToken.length > 0) {
             return authToken;
