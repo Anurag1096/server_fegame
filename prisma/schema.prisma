@@ -12,8 +12,20 @@ model User {
   email         String         @unique
   createdAt     DateTime       @default(now())
   username      String         @unique
-  password      String
+  password      String?
   refreshTokens RefreshToken[]
+  accounts      Account[]
+}
+
+model Account {
+  id         String @id @default(uuid())
+  provider   String
+  providerId String
+  userId     Int
+  user       User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerId])
+  @@index([userId])
 }
 
 model RefreshToken {

@@ -6,6 +6,6 @@ export class UserEntity{
   username:string;
   email:string;
   @Exclude()
-  password: string;
+  password: string | null;
    
 }

@@ -11,7 +11,9 @@ import { hashPassword, verifyPassword } from 'src/utils/hash';
 import { REFRESH_COOKIE_MAX_AGE_MS } from './constants/auth-cookie.constants';
 import { JwtPayload } from './guards/jwt-auth.guard';
 import { RefreshTokenRepository } from './repository/refresh-token.repository';
+import { AccountRepository } from './repository/account.repository';
 import { AuthSessionResult, AuthUserResponse } from './types/auth.types';
+import { OAuthProfile } from './types/oauth.types';
 
 type RefreshTokenParts = {
     plainToken: string;
@@ -25,6 +27,7 @@ export class AuthService {
         private readonly userService: UserService,
         private readonly jwtService: JwtService,
         private readonly refreshTokenRepository: RefreshTokenRepository,
+        private readonly accountRepository: AccountRepository,
     ) {}
 
     async signUp(
@@ -57,12 +60,57 @@ export class AuthService {
             throw new UnauthorizedException('Invalid credentials');
         }
 
+        if (!user.password) {
+            throw new UnauthorizedException('Use OAuth to sign in to this account');
+        }
+
         const valid = await verifyPassword(user.password, pass);
         if (!valid) {
             throw new UnauthorizedException('Invalid credentials');
         }
 
         return this.createSession(user.id, user.username);
+    }
+
+    async signInWithOAuth(profile: OAuthProfile): Promise<AuthSessionResult> {
+        const existingAccount = await this.accountRepository.findByProvider(
+            profile.provider,
+            profile.providerId,
+        );
+
+        if (existingAccount) {
+            return this.createSession(
+                existingAccount.user.id,
+                existingAccount.user.username,
+            );
+        }
+
+        const normalizedEmail = profile.email.trim().toLowerCase();
+        const existingUser = await this.userService.findByEmail(normalizedEmail);
+
+        if (existingUser) {
+            await this.accountRepository.create(
+                existingUser.id,
+                profile.provider,
+                profile.providerId,
+            );
+
+            return this.createSession(existingUser.id, existingUser.username);
+        }
+
+        const username = await this.generateUniqueUsername(profile.displayName);
+        const newUser = await this.userService.createOAuthUser({
+            username,
+            email: normalizedEmail,
+        });
+
+        await this.accountRepository.create(
+            newUser.id,
+            profile.provider,
+            profile.providerId,
+        );
+
+        return this.createSession(newUser.id, newUser.username);
     }
 
     async refreshSession(refreshToken: string): Promise<AuthSessionResult> {
@@ -140,5 +188,28 @@ export class AuthService {
 
     private generateAccessToken(userId: number, username: string): Promise<string> {
         return this.jwtService.signAsync({ sub: userId, userName: username });
+    }
+
+    private sanitizeUsername(value: string): string {
+        const cleaned = value
+            .trim()
+            .toLowerCase()
+            .replace(/[^a-z0-9_]+/g, '')
+            .slice(0, 20);
+
+        return cleaned.length > 0 ? cleaned : 'player';
+    }
+
+    private async generateUniqueUsername(displayName: string): Promise<string> {
+        const base = this.sanitizeUsername(displayName);
+        let candidate = base;
+        let suffix = 0;
+
+        while (await this.userService.findOne({ username: candidate })) {
+            suffix += 1;
+            candidate = `${base}${suffix}`;
+        }
+
+        return candidate;
     }
 }

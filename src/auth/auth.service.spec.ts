@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { JwtService } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
 import { UserService } from 'src/Features/User/user.service';
+import { AccountRepository } from './repository/account.repository';
 import { RefreshTokenRepository } from './repository/refresh-token.repository';
 
 describe('AuthService', () => {
@@ -15,7 +16,16 @@ describe('AuthService', () => {
                     provide: UserService,
                     useValue: {
                         findOne: jest.fn(),
+                        findByEmail: jest.fn(),
                         createUser: jest.fn(),
+                        createOAuthUser: jest.fn(),
+                    },
+                },
+                {
+                    provide: AccountRepository,
+                    useValue: {
+                        findByProvider: jest.fn(),
+                        create: jest.fn(),
                     },
                 },
                 {

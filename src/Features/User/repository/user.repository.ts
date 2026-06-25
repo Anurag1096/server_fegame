@@ -33,4 +33,32 @@ export class UserReopsitory {
         }
     }
 
+    async findByEmail(email: string): Promise<User | null> {
+        try {
+            return await this.prisma.user.findUnique({
+                where: { email },
+            });
+        } catch (error) {
+            console.log(error);
+            return null;
+        }
+    }
+
+    async createOAuthUser(data: {
+        username: string;
+        email: string;
+    }): Promise<User | null> {
+        try {
+            return await this.prisma.user.create({
+                data: {
+                    username: data.username,
+                    email: data.email,
+                },
+            });
+        } catch (error) {
+            console.log(error);
+            return null;
+        }
+    }
+
 }

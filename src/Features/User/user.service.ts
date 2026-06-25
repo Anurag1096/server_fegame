@@ -32,4 +32,16 @@ export class UserService {
 
     }
 
+    async findByEmail(email: string) {
+        return this.userRepo.findByEmail(email);
+    }
+
+    async createOAuthUser(data: { username: string; email: string }) {
+        const userCreated = await this.userRepo.createOAuthUser(data);
+        if (!userCreated) {
+            throw new Error('Failed to create OAuth user');
+        }
+        return userCreated;
+    }
+
 }
