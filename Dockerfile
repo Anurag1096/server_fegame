@@ -15,7 +15,7 @@ RUN corepack enable && corepack prepare pnpm@10.33.0 --activate
 
 COPY .npmrc pnpm-lock.yaml ./
 
-# Download packages into the store first (cacheable, lockfile-only)
+# Step 1: download all packages into the pnpm store (lockfile only, cacheable)
 RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
     pnpm fetch --config.trustPolicy=any --config.minimumReleaseAge=0
 
@@ -23,7 +23,7 @@ COPY package.json ./
 COPY prisma ./prisma
 COPY prisma.config.ts ./
 
-# Link from store without hitting the registry again
+# Step 2: link packages from the store without hitting npm again
 RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
     pnpm install --frozen-lockfile --offline
 
